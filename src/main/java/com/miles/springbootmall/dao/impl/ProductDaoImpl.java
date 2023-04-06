@@ -28,10 +28,8 @@ public class ProductDaoImpl implements ProductDao {
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
         if (productList.size() > 0) {
-            System.out.println("size =" + productList.size());
             return productList.get(0);
         } else {
-            System.out.println("空值");
             return null;
         }
     }
