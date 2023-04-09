@@ -1,5 +1,6 @@
 package com.miles.springbootmall.controller;
 
+import com.miles.springbootmall.constant.ProductCategory;
 import com.miles.springbootmall.dto.ProductRequest;
 import com.miles.springbootmall.model.Product;
 import com.miles.springbootmall.service.ProductService;
@@ -18,12 +19,14 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
-        List<Product> productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) ProductCategory category,
+                                                     @RequestParam(required = false) String search) {
+        List<Product> productList = productService.getProducts(category, search);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
 
     }
+
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
         Product product = productService.getProductById(productId);
