@@ -21,6 +21,26 @@ import java.util.Map;
 public class ProductDaoImpl implements ProductDao {
 
     @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "select count(*) from product where 1 = 1";
+
+        Map<String, Object> map = new HashMap<>();
+
+        if (productQueryParams.getCategory() != null) {
+            sql = sql + " and category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+        if (productQueryParams.getSearch() != null) {
+            sql = sql + " and product_name like :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return total;
+    }
+
+    @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "select product_id, product_name, category, image_url, price, stock, description, " +
                 "created_date, last_modified_date " +
@@ -32,8 +52,6 @@ public class ProductDaoImpl implements ProductDao {
         if (productQueryParams.getCategory() != null) {
             sql = sql + " and category = :category";
             map.put("category", productQueryParams.getCategory().name());
-        } else {
-            System.out.println("category is null.");
         }
 
         if (productQueryParams.getSearch() != null) {
@@ -43,7 +61,7 @@ public class ProductDaoImpl implements ProductDao {
 
         sql = sql + " order by " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
-        sql = sql+" limit :limit offset :offset";
+        sql = sql + " limit :limit offset :offset";
         map.put("limit", productQueryParams.getLimit());
         map.put("offset", productQueryParams.getOffset());
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
