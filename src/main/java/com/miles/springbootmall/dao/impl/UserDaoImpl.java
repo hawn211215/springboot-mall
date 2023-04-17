@@ -4,6 +4,9 @@ import com.miles.springbootmall.dao.UserDao;
 import com.miles.springbootmall.dto.UserRegisterRequest;
 import com.miles.springbootmall.model.User;
 import com.miles.springbootmall.rowmapper.UserRowMapper;
+import com.miles.springbootmall.service.impl.UserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,10 +20,27 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl implements  UserDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public User getUserByEmail(String email) {
+        String sql = "select user_id, email, password, created_date, last_modified_date " +
+                "from user where email = :email";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("email", email);
+
+        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+
+        if (userList.size() > 0) {
+            return userList.get(0);
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public User getUserById(Integer userId) {
@@ -38,6 +58,7 @@ public class UserDaoImpl implements UserDao {
             return null;
         }
     }
+
 
     @Override
     public Integer createUser(UserRegisterRequest userRegisterRequest) {

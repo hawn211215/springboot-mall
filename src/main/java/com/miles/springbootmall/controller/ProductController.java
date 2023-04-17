@@ -75,6 +75,7 @@ public class ProductController {
         Integer productId = productService.createProduct(productRequest);
 
         Product product = productService.getProductById(productId);
+        System.out.println();
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
 
     }
